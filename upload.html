@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Upload Critter</title>
+   </head>
+   <body>
+      Upload a file:
+      <form enctype="multipart/form-data">
+         Username
+         <input name="userame" type="text" /><br />
+         Password
+         <input name="password" type="password" /><br />
+         <input name="uploadfile" type="file" /><br />
+      </form>
+      <button>submit</button>
+
+
+
+      <script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+
+      <script>
+         var API_URL = "http://localhost:4555/upload";
+         window.onload = function() {
+            $(":file").on("change", function() {
+               var file = this.files[0];
+               if(file.size > 102400) {
+                  alert('max upload is 100kb');
+               }
+            });
+
+            $(":button").on('click', function() {
+               $.ajax({
+                  url: API_URL,
+                  type: "POST",
+
+                  data: new FormData($('form')[0]),
+
+                  cache: false,
+                  contentType: false,
+                  processData: false,
+                  // Custom XMLHttpRequest
+                  xhr: function() {
+                      var myXhr = $.ajaxSettings.xhr();
+                      if (myXhr.upload) {
+                          // For handling the progress of the upload
+                          myXhr.upload.addEventListener('progress', function(e) {
+                              if (e.lengthComputable) {
+                                  $('progress').attr({
+                                      value: e.loaded,
+                                      max: e.total,
+                                  });
+                              }
+                          } , false);
+                      }
+                      return myXhr;
+                  }
+               }).then(function(data, xhr, status) {
+                  console.log("data123");
+               });
+            });
+         }
+
+      </script>
+   </body>
+</html>
